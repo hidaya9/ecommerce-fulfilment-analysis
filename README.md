@@ -42,7 +42,7 @@ Some calculations also required assumptions, particularly when allocating order-
 ## Code & Results
 
 - **`fulfilment_analysis.py`** — Python code for data analysis, statistical testing and visualisations.
-- **`business_insights_and_recommendations.pdf`** — Supporting charts, key findings and business recommendations.
+- **[Business Insights & Recommendations](business_insights_and_recommendations.pdf)** — Supporting charts, key findings and business recommendations.
 - **`sample_data/`** — Small, synthetic datasets included to illustrate the structure of the original data.
 
-**Data note:** The original datasets are not publicly available. The sample files contain fictional data for illustrative purposes only and do not reproduce the findings presented in the report.
+**Data note:** The original datasets are not publicly available. The sample files contain fictional data to illustrate the dataset structure and are not intended to reproduce the analysis or findings presented in the report.
