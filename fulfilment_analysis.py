@@ -104,7 +104,7 @@ print(f"Category with highest refund rate: {worst_category}")
 
 # 6. Statistical Significance of Refund Rate Differences
 
-# worst_category already calculated in Q5.
+# worst_category already calculated above in 5.
 best_category = refund_rate_per_category.idxmin()
 
 # Get total and refunded order counts for the best and worst categories.
@@ -156,7 +156,7 @@ alpha = 0.05
 if p_value < alpha:
     print("\nReject Null Hypothesis: There is a significant association between category and refund status.")
 else:
-    print("\nFail to Reject Null Hypothesis: No significant association between category and refund status.")
+    print("\nFail to Reject Null Hypothesis: Insufficient evidence of a statistically significant association between product category and refund status.")
 
 # A p-value below 0.05 provides evidence of an association
 # between product category and refund status.
@@ -179,7 +179,7 @@ returned_and_refunded = pd.merge(
 grouped_returns = returned_and_refunded.groupby('courier')['shipment_id'].count()
 
 # Divide by all parcels handled by each courier.
-# total_parcels was calculated in Q1.
+# total_parcels was calculated earlier in 1.
 percentage_per_courier = (grouped_returns / total_parcels) * 100 
 
 lowest_courier = percentage_per_courier.idxmin()
@@ -214,7 +214,7 @@ orders_refunds_joined['net_revenue'] = (
 # Revenue is recorded at order level, while courier data is at parcel level.
 # Count the number of parcels in each order so order-level net revenue can
 # be allocated across its parcels. 
-# change to data frame so we can merge back
+
 parcels_per_order = (
     shipments.groupby('order_id')['shipment_id'].count().to_frame()
 )
@@ -287,7 +287,7 @@ return_rate_by_courier = (
     / total_parcels
 ) * 100
 
-# Use the parcel-level revenue calculated in Section 1 Q8 to compare
+# Use the parcel-level revenue calculated in Section 1, 8. to compare
 # average net revenue per parcel across couriers.
 revenue_per_parcel_by_courier = (
     parcel_revenues.groupby('courier')['revenue_per_parcel'].mean()
