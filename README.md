@@ -4,7 +4,7 @@ A Python data analysis project exploring courier performance, shipping efficienc
 
 ## Project Overview
 
-The analysis uses three datasets containing orders, shipments and refunds to evaluate fulfilment performance and investigate the factors contributing to refund-related losses.
+The analysis covers 5,000 orders across four UK regions and three delivery couriers, using datasets containing orders, shipments and refunds to evaluate fulfilment performance and identify opportunities to reduce refund-related losses.
 
 The project is divided into two main areas:
 
