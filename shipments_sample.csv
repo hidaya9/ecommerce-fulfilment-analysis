@@ -1,0 +1,6 @@
+shipment_id,order_id,courier,ship_date,delivered_date,status,shipping_days
+2001,1001,Arrow,2026-01-06,2026-01-08,Delivered,2
+2002,1002,Bolt,2026-01-07,2026-01-10,Delivered,3
+2003,1003,Cyclone,2026-01-08,,Returned,
+2004,1004,Arrow,2026-01-09,2026-01-11,Delivered,2
+2005,1004,Bolt,2026-01-09,2026-01-12,Delivered,3

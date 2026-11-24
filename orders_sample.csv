@@ -1,0 +1,6 @@
+order_id,customer_id,order_date,region,category,items,order_value
+1001,501,2026-01-05,North,Electronics,1,450.00
+1002,502,2026-01-06,South,Clothing,2,85.00
+1003,503,2026-01-07,East,Home,1,120.00
+1004,504,2026-01-08,West,Sports,3,175.00
+1005,505,2026-01-09,North,Toys,2,45.00

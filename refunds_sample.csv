@@ -1,0 +1,6 @@
+refund_id,order_id,refund_date,refund_reason,refund_amount
+3001,1002,2026-01-12,Late,20.00
+3002,1003,2026-01-13,Damaged,120.00
+3003,1004,2026-01-15,Wrong Item,50.00
+3004,1001,2026-01-11,Customer Cancelled,30.00
+3005,1005,2026-01-14,Damaged,15.00
