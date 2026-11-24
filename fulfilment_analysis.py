@@ -1,3 +1,14 @@
+"""
+E-Commerce Fulfilment Analysis
+
+Explores courier performance, shipping efficiency and refund-related
+losses to support data-driven operational recommendations.
+
+The original datasets are not included in this repository.
+Synthetic sample files are provided to illustrate the data structure
+and are not intended to reproduce the reported findings.
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.stats import chi2_contingency
@@ -6,22 +17,21 @@ refunds = pd.read_csv('refunds.csv')
 shipments = pd.read_csv('shipments.csv')
 
 
-print('************************************************************************'
-'\nSECTION 1'
-'\n************************************************************************')
+print("\n=== EXPLORATORY AND STATISTICAL ANALYSIS ===")
 
+# 1. Parcel Volume by Courier
 
-# 1.
 # Each row in the shipments dataset represents one parcel, so the number
 # of shipment records for each courier gives the total parcels handled.
 total_parcels = (shipments['courier'].value_counts())
 max_courier = total_parcels.idxmax()
 
-print("\nQ1")
+print("\n1. Parcel Volume by Courier")
 print(f"Courier handling the most parcels: {max_courier}")
 
 
-# 2. 
+# 2. Overall Average Shipping Time
+
 # Shipping time is calculated using delivered parcels only, as returned and
 # lost parcels do not have a completed delivery time.
 # Round shipping days to 1dp.
@@ -29,11 +39,12 @@ avg_shipping_days = round(
     shipments[shipments['status'] == 'Delivered']['shipping_days'].mean(), 1
     )
 
-print("\nQ2")
+print("\n2. Overall Average Shipping Time")
 print(f"Average shipping time: {avg_shipping_days} days")
 
 
-#3. 
+#3. Average Shipping Time by Region
+
 # Only delivered parcels are included because returned and lost parcels
 # do not have a completed shipping time.
 # The shipments dataset does not contain region, so it is joined to orders
@@ -50,21 +61,23 @@ joined_df = pd.merge(
 avg_shipping_per_region = joined_df.groupby('region')['shipping_days'].mean()
 max_region = avg_shipping_per_region.idxmax()
 
-print("\nQ3")
+print("\n3. Average Shipping Time by Region")
 print(f"Region with longest average shipping time: {max_region}")
 
 
-#4. 
+#4. Total Order Value by Product Category
+
 # order_value is recorded at order level, so no join to shipment or refund
 # data is required. Order values are summed within each product category.
 category_totals = orders.groupby('category')['order_value'].sum()
 max_category = category_totals.idxmax()
 
-print("\nQ4")
+print("\n4. Total Order Value by Product Category")
 print(f"Category with highest total order value: {max_category}")
 
 
-# 5. 
+# 5. Refund Rates by Product Category
+
 # The refunds dataset contains one row per refunded order. It is joined to
 # orders using order_id so each refunded order can be assigned a category.
 orders_refunds = pd.merge(
@@ -84,12 +97,13 @@ orders_per_category = orders['category'].value_counts()
 refund_rate_per_category = (refunds_per_category / orders_per_category) * 100
 worst_category = refund_rate_per_category.idxmax()
 
-print("\nQ5")
+print("\n5. Refund Rates by Product Category")
 print(refund_rate_per_category)
 print(f"Category with highest refund rate: {worst_category}")
 
 
-# 6. 
+# 6. Statistical Significance of Refund Rate Differences
+
 # worst_category already calculated in Q5.
 best_category = refund_rate_per_category.idxmin()
 
@@ -103,6 +117,15 @@ best_refunds = refunds_per_category[best_category]
 # Calculate the number of non-refunded orders in each category.
 worst_not_refunded = worst_orders - worst_refunds
 best_not_refunded = best_orders - best_refunds
+
+# A chi-square test of independence is used to compare refund rates
+# between the categories with the highest and lowest observed rates.
+#
+# H0: Refund status is independent of product category.
+# H1: Refund status is associated with product category.
+#
+# The test uses a 2x2 contingency table of refunded and
+# non-refunded orders for the two categories.
 
 # Create a 2x2 contingency table of refund status by category.
 contingency_table = [
@@ -119,7 +142,7 @@ contingency_df = pd.DataFrame(
 # Run a chi-square test of independence.
 chi2_stat, p_value, dof, expected = chi2_contingency(contingency_table)
 
-print("\nQ6")
+print("\n6. Statistical Significance of Refund Rate Differences")
 # Displaying results
 print(f"\nChi-Square Statistic: {chi2_stat:.4f}")
 print(f"Degrees of Freedom: {dof}")
@@ -135,8 +158,13 @@ if p_value < alpha:
 else:
     print("\nFail to Reject Null Hypothesis: No significant association between category and refund status.")
 
+# A p-value below 0.05 provides evidence of an association
+# between product category and refund status.
+# Otherwise, there is insufficient evidence to reject H0.
 
-#7. 
+
+#7. Returned and Refunded Parcels by Courier
+
 # Filter to returned parcels, then inner join to refunds so only parcels
 # also belonging to refunded orders remain.
 returned_shipments = shipments[shipments['status'] == 'Returned']
@@ -156,11 +184,12 @@ percentage_per_courier = (grouped_returns / total_parcels) * 100
 
 lowest_courier = percentage_per_courier.idxmin()
 
-print("\nQ7")
+print("\n7. Returned and Refunded Parcels by Courier")
 print(f"Courier with lowest returned and refunded parcel rate: {lowest_courier}")
 
 
-# 8. 
+# 8. Net Revenue per Parcel by Courier and Category
+
 # Net revenue is assumed as order value minus refund amount.
 
 # Left join refunds to orders so non-refunded orders are retained.
@@ -230,17 +259,16 @@ parcel_revenue_by_courier_category = (
 
 highest_combo = parcel_revenue_by_courier_category.idxmax()
 
-print("\nQ8")
+print("\n8. Net Revenue per Parcel by Courier and Category")
 print(f"Highest courier & category combination: {highest_combo}")
 
 
 
-print('\n************************************************************************'
-'\nSECTION 2'
-'\n************************************************************************')
+print("\n=== BUSINESS ANALYSIS AND RECOMMENDATIONS ===")
 
 
-# 1.
+# 1. Single Courier Performance Comparison
+
 # Filter shipments to delivered parcels, then group them by courier.
 # Compare delivery speed, delivery rate and return rate across couriers.
 avg_shipping_by_courier = (
@@ -270,7 +298,7 @@ revenue_per_parcel_by_courier = (
 # Count the number of unique couriers used for each order.
 couriers_per_order = shipments.groupby('order_id')['courier'].nunique()
 
-print("\nQ1")
+print("\n1. Single Courier Performance Comparison")
 print("Number of couriers used per order:")
 print(couriers_per_order.value_counts())
 
@@ -358,7 +386,8 @@ print(courier_comparison)
 
 
 
-# 2.
+# 2. Regional and Category-Based Courier Analysis
+
 # Category & courier analysis
 
 # Add product category to each single-courier order so refund rates
@@ -402,7 +431,7 @@ category_comparison.columns = [
 ]
 category_comparison = category_comparison.round(2)
 
-print("\nQ2")
+print("\n2. Regional and Category-Based Courier Analysis")
 print("Refund rate by category and courier:")
 print(category_comparison)
 
@@ -457,7 +486,8 @@ plt.show()
 
 
 
-# 3.
+# 3. Refund Reasons and Operational Improvements
+
 # Count refunds by recorded reason to identify the main sources
 # of refund-related losses.
 refund_reason_counts = refunds['refund_reason'].value_counts()
@@ -472,7 +502,7 @@ refund_reason_summary = pd.DataFrame({
     'Percentage of Refunds (%)': refund_reason_percentages
 }).round(2)
 
-print("\nQ3")
+print("\n3. Refund Reasons and Operational Improvements")
 print("Refund reasons:")
 print(refund_reason_summary)
 
